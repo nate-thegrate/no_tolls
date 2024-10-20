@@ -1,0 +1,7 @@
+export 'package:flutter/material.dart' hide Route;
+export 'package:url_launcher/url_launcher_string.dart';
+
+class Seconds extends Duration {
+  const Seconds(double seconds)
+      : super(microseconds: (seconds * Duration.microsecondsPerSecond) ~/ 1);
+}

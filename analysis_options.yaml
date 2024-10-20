@@ -5,7 +5,6 @@ include: package:flutter_lints/flutter.yaml
 
 linter:
   rules:
-    # type_annotate_public_apis: true
     # cascade_invocations: true
     # avoid_print: false
 
@@ -18,13 +17,17 @@ linter:
     join_return_with_assignment: true
     noop_primitive_operations: true
     only_throw_errors: true
+    prefer_const_constructors: true
+    prefer_const_declarations: true
     prefer_constructors_over_static_methods: true
     prefer_final_locals: true
     prefer_if_elements_to_conditional_expressions: true
     prefer_single_quotes: true
     sized_box_shrink_expand: true
     sort_constructors_first: true
+    specify_nonobvious_local_variable_types: true
     tighten_type_of_initializing_formals: true
+    type_annotate_public_apis: true
     unnecessary_breaks: true
     unnecessary_lambdas: true
     unnecessary_parenthesis: true
