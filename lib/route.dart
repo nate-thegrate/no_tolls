@@ -21,7 +21,10 @@ enum Route {
     _goRouter.goNamed(route.name, pathParameters: params, extra: extra);
   }
 
-  String get uri => switch (this) { home => '/', getHooked => '/get-hooked' };
+  String get uri => switch (this) {
+    home => '/',
+    getHooked => '/get-hooked',
+  };
 }
 
 final _goRouter = GoRouter(
@@ -30,12 +33,12 @@ final _goRouter = GoRouter(
     GoRoute(
       path: '/',
       name: Route.home.name,
-      pageBuilder: (context, state) => const NoTransitionPage(child: Home()),
+      pageBuilder: (context, state) => const MaterialPage(child: Home()),
       routes: [
         GoRoute(
           path: Route.getHooked.uri,
           name: Route.getHooked.name,
-          pageBuilder: (context, state) => const NoTransitionPage(child: GetHooked()),
+          pageBuilder: (context, state) => const MaterialPage(child: GetHooked()),
         ),
       ],
     ),

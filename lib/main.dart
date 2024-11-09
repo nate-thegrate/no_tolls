@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:no_tolls/get_hooked/get_hooked.dart';
 import 'package:no_tolls/home/home.dart';
+import 'package:no_tolls/the_good_stuff.dart';
 
 part 'route.dart';
 
@@ -16,11 +16,23 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Vsync.defaultCurve = Curves.ease;
+
     return MaterialApp.router(
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xff00ffff),
           dynamicSchemeVariant: DynamicSchemeVariant.fidelity,
+        ),
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.fuchsia: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.windows: CupertinoPageTransitionsBuilder(),
+          },
         ),
       ),
       debugShowCheckedModeBanner: false,

@@ -22,7 +22,7 @@ class Home extends StatelessWidget {
     );
   }
 
-  static void swearWordDialog() => showDialog(context: App.context, builder: dialogBuilder);
+  static void swearWordDialog() => showDialog<void>(context: App.context, builder: dialogBuilder);
   static void getHooked() => Route.go(Route.getHooked);
 
   @override
@@ -70,21 +70,20 @@ class Home extends StatelessWidget {
                 ),
               ),
               Spacer(),
-              Text.rich(TextSpan(children: [
-                TextSpan(text: 'No Tolls', style: TextStyle(fontSize: 42)),
-                TextSpan(text: '\nopen source = free'),
-                TextSpan(text: '\nfree = good\n'),
-              ])),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(text: 'No Tolls', style: TextStyle(fontSize: 42)),
+                    TextSpan(text: '\nopen source = free'),
+                    TextSpan(text: '\nfree = good\n'),
+                  ],
+                ),
+              ),
               Spacer(flex: 4),
               FilledButton(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(Color(0xff004080)),
-                ),
+                style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Color(0xff004080))),
                 onPressed: getHooked,
-                child: Text(
-                  'Get Hooked!',
-                  style: TextStyle(fontWeight: FontWeight.normal),
-                ),
+                child: Text('Get Hooked!', style: TextStyle(fontWeight: FontWeight.normal)),
               ),
               Spacer(flex: 8),
             ],
@@ -100,11 +99,7 @@ class _NO extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const icon = Icon(
-      Icons.block_flipped,
-      size: 200,
-      color: Color(0xffe01030),
-    );
+    const icon = Icon(Icons.block_flipped, size: 200, color: Color(0xffe01030));
 
     return AnimatedOpacity(
       opacity: ModalRoute.isCurrentOf(context)! ? 1 : 0,

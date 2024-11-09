@@ -1,37 +1,30 @@
 import 'dart:math' as math;
 
+import 'package:flutter/rendering.dart';
 import 'package:no_tolls/the_good_stuff.dart';
-// import 'package:get_hooked/get_hooked.dart';
 
 class GetHooked extends StatelessWidget {
   const GetHooked({super.key});
 
-  static _getHooked() => launchUrlString('https://pub.dev/');
-  static _back() => Route.go(Route.home);
+  static void _getHooked() => launchUrlString('https://pub.dev/');
+  static void _back() => Route.go(Route.home);
 
   static OutlinedBorder _shape(Set<WidgetState> states) {
-    final radius = BorderRadius.circular(
-      states.contains(WidgetState.hovered) ? 0.0 : 32.0,
-    );
+    final radius = BorderRadius.circular(states.contains(WidgetState.hovered) ? 0.0 : 32.0);
     return RoundedRectangleBorder(borderRadius: radius);
   }
 
   @override
   Widget build(BuildContext context) {
-    const logo = FittedBox(
-      child: SizedBox(width: 200, height: 300, child: CustomPaint(painter: _HookLogoPainter())),
+    const logo = RepaintBoundary(
+      child: FittedBox(child: SizedBox(width: 200, height: 300, child: HookedLogo())),
     );
     const button = ElevatedButton(
       style: ButtonStyle(
         shape: WidgetStateOutlinedBorder.resolveWith(_shape),
-        padding: WidgetStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: 48, vertical: 24),
-        ),
+        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 48, vertical: 24)),
         backgroundColor: WidgetStatePropertyAll(Color(0xff002c80)),
-        elevation: WidgetStateMapper({
-          WidgetState.pressed: 0,
-          WidgetState.any: 4,
-        }),
+        elevation: WidgetStateMapper({WidgetState.pressed: 0, WidgetState.any: 4}),
         overlayColor: WidgetStateMapper({
           WidgetState.pressed: Color(0x40101010),
           WidgetState.hovered: Color(0x01010101),
@@ -42,11 +35,7 @@ class GetHooked extends StatelessWidget {
       child: Text(
         'get_hooked\non pub.dev',
         textAlign: TextAlign.center,
-        style: TextStyle(
-          color: Color(0xffe0e0e0),
-          fontSize: 24,
-          fontWeight: FontWeight.w300,
-        ),
+        style: TextStyle(color: Color(0xffe0e0e0), fontSize: 24, fontWeight: FontWeight.w300),
       ),
     );
 
@@ -55,13 +44,9 @@ class GetHooked extends StatelessWidget {
       body: Center(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Column(children: [
-            Spacer(),
-            logo,
-            Spacer(flex: 2),
-            button,
-            Spacer(flex: 2),
-          ]),
+          child: FadeIn(
+            child: Column(children: [Spacer(), logo, Spacer(flex: 2), button, Spacer(flex: 2)]),
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop,
@@ -81,56 +66,104 @@ class GetHooked extends StatelessWidget {
   }
 }
 
-class _HookLogoPainter extends CustomPainter {
-  const _HookLogoPainter();
+final getFade = Get.vsyncValue(0.0, duration: const Seconds(1));
+final getGradient = Get.vsyncValue(0.0, duration: const Seconds(5 / 3));
 
-  static const double scale = 300 / 16;
-  static final canvasTransform = Matrix4.diagonal3Values(scale, scale, scale).storage;
-  static final ovalTransform = Matrix4.rotationZ(-math.pi / 4).storage
-    ..[12] = 6.25
-    ..[13] = 1.5;
+class FadeIn extends SingleChildRenderObjectWidget {
+  const FadeIn({super.key, super.child});
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final path = Path()
-      ..moveTo(10.55, 10)
-      ..cubicTo(10.55, 20.75, -9, 16, 5.5, 1.5)
-      ..lineTo(6.33, 2.2)
-      ..cubicTo(-6, 15, 8.25, 17.75, 9.5, 11.5)
-      ..cubicTo(9.9, 10, 9, 10.5, 8.45, 10.5)
-      ..lineTo(10.55, 8)
-      ..close()
-      ..addPath(
-        (Path()..addOval(Rect.fromCenter(center: Offset.zero, width: 3.25, height: 1.25)))
-            .transform(ovalTransform),
-        Offset.zero,
-      );
+  RenderObject createRenderObject(BuildContext context) {
+    getFade.attach(context);
 
-    final Rect rect = Rect.fromLTWH(0, 0, 16 * size.width / 300, 16);
-    const gradient = SweepGradient(
-      colors: [
-        Color(0xff00ffff),
-        Color(0xff0078b0),
-        Color(0xff003090),
-        Color(0xff000820),
-      ],
+    return RenderAnimatedOpacity(
+      opacity: getFade.it..animateTo(1.0, curve: Curves.easeInOutSine),
     );
-    canvas
-      ..transform(canvasTransform)
-      ..drawShadow(path, Colors.black, 4, false)
-      ..drawShadow(path, Colors.black, 8, false)
-      ..clipPath(path)
-      ..drawRect(
-        rect,
-        Paint()..shader = gradient.createShader(rect),
-      )
-      ..transform(ovalTransform)
-      ..drawOval(
-        Rect.fromCenter(center: Offset.zero, width: 2.1, height: 0.45),
-        Paint()..color = const Color(0xff101010),
-      );
+  }
+}
+
+class HookedLogo extends LeafRenderObjectWidget {
+  const HookedLogo({super.key});
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    getGradient.attach(context);
+    return _RenderHookedLogo();
+  }
+}
+
+class _RenderHookedLogo extends BigBox {
+  _RenderHookedLogo() {
+    init();
+  }
+
+  final animation = getGradient.it;
+
+  void init() async {
+    if (getFade.controls.value < 1) {
+      await Future<void>.delayed(Durations.long1);
+    }
+    animation
+      ..animateTo(1.0, from: 0.0)
+      ..addListener(markNeedsPaint);
   }
 
   @override
-  bool shouldRepaint(_HookLogoPainter oldDelegate) => false;
+  void dispose() {
+    animation.removeListener(markNeedsPaint);
+    super.dispose();
+  }
+
+  static const double scale = 300 / 16;
+  static final canvasTransform = Matrix4.diagonal3Values(scale, scale, scale).storage;
+  static final ovalTransform =
+      Matrix4.rotationZ(-math.pi / 4).storage
+        ..[12] = 6.25
+        ..[13] = 1.5;
+
+  // dart format off
+  static final path = Path()
+    ..moveTo(10.55, 10)
+    ..cubicTo(10.55, 20.75, -9, 16, 5.5, 1.5)
+    ..lineTo(6.33, 2.2)
+    ..cubicTo(-6, 15, 8.25, 17.75, 9.5, 11.5)
+    ..cubicTo(9.9, 10, 9, 10.5, 8.45, 10.5)
+    ..lineTo(10.55, 8)
+    ..close()
+    ..addPath((
+        Path()..addOval(Rect.fromCenter(center: Offset.zero, width: 3.25, height: 1.25))
+      ).transform(ovalTransform),
+      Offset.zero,
+    );
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    final gradient = SweepGradient(
+      colors: const [
+        Color(0xff00ffff),
+        Color(0xff0078b0),
+        Color(0xff003090),
+        Color(0xff000e30),
+      ],
+      stops: [for (int i = 0; i < 4; i++) i / 3 + animation.value - 1],
+    );
+    // dart format on
+
+    final Rect rect = Rect.fromLTWH(0, 0, 16 * size.width / 300, 16);
+    final Offset(:double dx, :double dy) = offset;
+    context.canvas
+      ..transform(
+        canvasTransform
+          ..[12] = dx
+          ..[13] = dy,
+      )
+      ..drawShadow(path, Colors.black, 4, false)
+      ..clipPath(path)
+      ..drawRect(rect, Paint()..shader = gradient.createShader(rect))
+      ..transform(ovalTransform)
+      ..drawOval(
+        Rect.fromCenter(center: Offset.zero, width: 2.1, height: 0.45),
+        Paint()..color = const Color(0xff181818),
+      );
+  }
 }
