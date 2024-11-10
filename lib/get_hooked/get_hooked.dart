@@ -6,7 +6,7 @@ import 'package:no_tolls/the_good_stuff.dart';
 class GetHooked extends StatelessWidget {
   const GetHooked({super.key});
 
-  static void _getHooked() => launchUrlString('https://pub.dev/');
+  static void _getHooked() => launchUrlString('https://pub.dev/packages/get_hooked');
   static void _back() => Route.go(Route.home);
 
   static OutlinedBorder _shape(Set<WidgetState> states) {
@@ -66,7 +66,8 @@ class GetHooked extends StatelessWidget {
   }
 }
 
-final getFade = Get.vsyncValue(0.0, duration: const Seconds(1));
+final getFade = Get.vsync();
+
 final getGradient = Get.vsyncValue(0.0, duration: const Seconds(5 / 3));
 
 class FadeIn extends SingleChildRenderObjectWidget {
@@ -74,11 +75,18 @@ class FadeIn extends SingleChildRenderObjectWidget {
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    getFade.attach(context);
+    final AnimationController opacityController = getFade.attach(context);
 
-    return RenderAnimatedOpacity(
-      opacity: getFade.it..animateTo(1.0, curve: Curves.easeInOutSine),
+    Future<void>.delayed(
+      Durations.medium1,
+      () => opacityController.animateTo(
+        1.0,
+        duration: const Seconds(1),
+        curve: Curves.easeInOutSine,
+      ),
     );
+
+    return RenderAnimatedOpacity(opacity: opacityController);
   }
 }
 
@@ -101,7 +109,7 @@ class _RenderHookedLogo extends BigBox {
 
   void init() async {
     if (getFade.controls.value < 1) {
-      await Future<void>.delayed(Durations.long1);
+      await Future<void>.delayed(Durations.extralong1);
     }
     animation
       ..animateTo(1.0, from: 0.0)
