@@ -38,7 +38,7 @@ final _goRouter = GoRouter(
         GoRoute(
           path: Route.getHooked.uri,
           name: Route.getHooked.name,
-          pageBuilder: (context, state) => const MaterialPage(child: GetHooked()),
+          pageBuilder: (context, state) => const MaterialPage(child: GetHookedScreen()),
         ),
       ],
     ),
