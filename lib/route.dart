@@ -13,12 +13,23 @@ enum Route {
     }
     throw ArgumentError('uri: $uri, segments: $segments');
   }
+  static Route get current {
+    return Route.fromUri(_goRouter.routerDelegate.currentConfiguration.uri);
+  }
 
   static void go(Route route, {Map<String, String>? params, Object? extra}) {
     if (params == null) {
       return _goRouter.go(route.uri, extra: extra);
     }
     _goRouter.goNamed(route.name, pathParameters: params, extra: extra);
+  }
+
+  static bool pop(KeyEvent event) {
+    if (event case KeyDownEvent(logicalKey: LogicalKeyboardKey.escape)) {
+      if (current == getHooked) Route.go(home);
+      return true;
+    }
+    return false;
   }
 
   String get uri => switch (this) {
